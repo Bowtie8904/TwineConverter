@@ -21,11 +21,22 @@ public class TwineCondition implements Xmlable, Jsonable
 {
     private String condition;
     private List<TwineAction> actions;
+    private int order;
 
     public TwineCondition(String condition)
     {
         this.condition = condition;
         this.actions = new LinkedList<>();
+    }
+
+    public int getOrder()
+    {
+        return order;
+    }
+
+    public void setOrder(int order)
+    {
+        this.order = order;
     }
 
     public String getCondition()
@@ -109,6 +120,7 @@ public class TwineCondition implements Xmlable, Jsonable
 
         builder.put("type", "if");
         builder.put("condition", this.condition);
+        builder.put("order", this.order);
         builder.put("actions", this.actions.toArray());
 
         return builder.toJSON();

@@ -40,6 +40,7 @@ public class TwineConverter
     private File textOutputDir;
     private boolean generateTexts;
     private String language;
+    private int orderIndex = 1;
 
     public TwineConverter(String inputDir, String outputDir, boolean generateTexts, String language)
     {
@@ -202,6 +203,7 @@ public class TwineConverter
                             {
                                 Log.debug("Found default condition");
                                 TwineAction action = extractDefaultCondition(line);
+                                action.setOrder(this.orderIndex++);
                                 passage.addDefaultCondition(action);
                             }
                             else if (lineStartsWith(line, "(if:"))
@@ -214,6 +216,11 @@ public class TwineConverter
 
                                 String conditionText = extractIfCondition(line);
                                 TwineCondition condition = obtainIfCondition(passage, conditionText);
+
+                                if (condition.getOrder() == 0)
+                                {
+                                    condition.setOrder(this.orderIndex++);
+                                }
 
                                 Log.debug("Found if condition " + conditionText);
 
@@ -243,7 +250,9 @@ public class TwineConverter
                         for (Integer dice : diceRolls)
                         {
                             Log.debug("Adding setter for dice roll " + dice);
-                            passage.addValueSetter(new TwineSetValue("$roll" + dice + " to random(1, " + dice + ")"));
+                            var setter = new TwineSetValue("$roll" + dice + " to random(1, " + dice + ")");
+                            setter.setOrder(this.orderIndex++);
+                            passage.addValueSetter(setter);
                         }
 
                         story.addPassage(passage);
@@ -426,13 +435,17 @@ public class TwineConverter
     private TwineSetValue extractValueSetter(String line)
     {
         String setter = line.substring(6, line.length() - 1).trim();
-        return new TwineSetValue(setter);
+        var obj = new TwineSetValue(setter);
+        obj.setOrder(this.orderIndex++);
+        return obj;
     }
 
     private TwineSwitchPassage extractSwitchPassage(String line)
     {
         String passage = formatString(line.trim()).trim();
-        return new TwineSwitchPassage(passage);
+        var obj = new TwineSwitchPassage(passage);
+        obj.setOrder(this.orderIndex++);
+        return obj;
     }
 
     private String formatString(String name)

@@ -55,6 +55,7 @@ public class TwineSetValue extends TwineAction implements Xmlable, Jsonable
 
         builder.put("type", "set");
         builder.put("set", this.setString);
+        builder.put("order", this.order);
 
         if (this.condition != null)
         {

@@ -55,6 +55,7 @@ public class TwineSwitchPassage extends TwineAction implements Xmlable, Jsonable
 
         builder.put("type", "switch");
         builder.put("next", this.passage);
+        builder.put("order", this.order);
 
         if (this.condition != null)
         {
