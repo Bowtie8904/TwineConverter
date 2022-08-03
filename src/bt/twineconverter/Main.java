@@ -8,16 +8,13 @@ import bt.log.Log;
 import bt.twineconverter.exc.ArgumentException;
 import bt.utils.Null;
 
-import javax.script.ScriptException;
-import java.io.IOException;
-
 /**
  * @author Lukas Hartwig
  * @since 15.05.2022
  */
 public class Main
 {
-    public static void main(String[] args) throws IOException, ScriptException
+    public static void main(String[] args)
     {
         Log.createDefaultLogFolder();
         Log.configureDefaultJDKLogger(new ConsoleLoggerHandler());
