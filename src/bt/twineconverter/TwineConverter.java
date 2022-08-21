@@ -8,6 +8,7 @@ import bt.log.Log;
 import bt.twineconverter.data.*;
 import bt.twineconverter.exc.ArgumentException;
 import bt.twineconverter.exc.TwineFormatException;
+import bt.twineconverter.util.ReplaceUtils;
 import org.dom4j.DocumentException;
 import org.dom4j.Node;
 
@@ -174,6 +175,8 @@ public class TwineConverter
                                 {
                                     String dialogOptionText = extractDialogOptionText(line);
 
+                                    dialogOptionText = ReplaceUtils.replaceInvalidCharacters(dialogOptionText);
+
                                     if (this.generateTexts)
                                     {
                                         String key = story.getName() + "." + passage.getName() + ".options." + option.getId() + ".text";
@@ -244,6 +247,8 @@ public class TwineConverter
 
                         if (hasAnyText)
                         {
+                            passageText = ReplaceUtils.replaceInvalidCharacters(passageText);
+
                             if (this.generateTexts)
                             {
                                 String key = story.getName() + "." + passage.getName() + ".text";
