@@ -143,6 +143,8 @@ public class TwineConverter
 
                         passageText = "";
 
+                        boolean hasAnyText = false;
+
                         for (int i = 0; i < lines.length; i++)
                         {
                             String line = lines[i];
@@ -231,20 +233,28 @@ public class TwineConverter
                             }
                             else
                             {
+                                if (!line.trim().isEmpty())
+                                {
+                                    hasAnyText = true;
+                                }
+
                                 passageText += line + "\n";
                             }
                         }
 
-                        if (this.generateTexts)
+                        if (hasAnyText)
                         {
-                            String key = story.getName() + "." + passage.getName() + ".text";
-                            texts.add(new Text(key, passageText));
+                            if (this.generateTexts)
+                            {
+                                String key = story.getName() + "." + passage.getName() + ".text";
+                                texts.add(new Text(key, passageText));
 
-                            passage.setText(key);
-                        }
-                        else
-                        {
-                            passage.setText(passageText);
+                                passage.setText(key);
+                            }
+                            else
+                            {
+                                passage.setText(passageText);
+                            }
                         }
 
                         for (Integer dice : diceRolls)
@@ -296,6 +306,7 @@ public class TwineConverter
 
     private TwineAction extractIfConditionAction(String line)
     {
+        line = line.trim();
         String actionText = line.substring(line.indexOf(")") + 1);
 
         if (lineStartsWith(actionText, "[[") && lineEndsWith(actionText, "]]"))
@@ -332,6 +343,7 @@ public class TwineConverter
 
     private TwineAction extractDefaultCondition(String line)
     {
+        line = line.trim();
         String actionText = line.substring(line.indexOf(")") + 1);
 
         if (lineStartsWith(actionText, "[[") && lineEndsWith(actionText, "]]"))
@@ -418,6 +430,7 @@ public class TwineConverter
 
     private TwineAction extractDialogOptionAction(String line)
     {
+        line = line.trim();
         String actionText = line.substring(line.indexOf("]") + 1);
 
         if (lineStartsWith(actionText, "[[") && lineEndsWith(actionText, "]]"))
@@ -434,6 +447,7 @@ public class TwineConverter
 
     private TwineSetValue extractValueSetter(String line)
     {
+        line = line.trim();
         String setter = line.substring(6, line.length() - 1).trim();
         var obj = new TwineSetValue(setter);
         obj.setOrder(this.orderIndex++);

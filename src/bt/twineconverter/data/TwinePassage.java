@@ -6,7 +6,6 @@ import bt.io.xml.ElementBuilder;
 import bt.io.xml.XML;
 import bt.io.xml.XMLBuilder;
 import bt.io.xml.Xmlable;
-import bt.utils.Null;
 import org.dom4j.Document;
 import org.json.JSONObject;
 
@@ -171,7 +170,7 @@ public class TwinePassage implements Xmlable, Jsonable
                                     .addAttribute("id", String.valueOf(this.id))
                                     .addAttribute("name", String.valueOf(this.name));
 
-        element.addElement(XML.element("text", Null.nullValue(this.text, "")));
+        element.addElement(XML.element("text", this.text));
 
         ElementBuilder dialogOptionsElement = XML.element("dialogOptions");
 
@@ -226,7 +225,7 @@ public class TwinePassage implements Xmlable, Jsonable
         builder.put("type", "passage");
         builder.put("id", this.id);
         builder.put("name", this.name);
-        builder.put("text", Null.nullValue(this.text, ""));
+        builder.put("text", this.text);
         builder.put("dialogOptions", this.dialogOptions.toArray());
 
         JSONBuilder condBuilder = new JSONBuilder();
