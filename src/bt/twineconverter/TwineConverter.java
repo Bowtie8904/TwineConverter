@@ -248,6 +248,14 @@ public class TwineConverter
                         if (hasAnyText)
                         {
                             passageText = ReplaceUtils.replaceInvalidCharacters(passageText);
+                            passageText = passageText.trim();
+
+                            // removing empty lines at the end
+                            while (passageText.endsWith("\n"))
+                            {
+                                passageText = passageText.substring(0, passageText.length() - 1);
+                                passageText = passageText.trim();
+                            }
 
                             if (this.generateTexts)
                             {
