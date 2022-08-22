@@ -35,6 +35,8 @@ public class TwineConverter
     private static final Pattern IF_DICE_ROLL_PATTERN = Pattern.compile("\\(if:\s*\\$roll\\d*.*");
     private static final Pattern IF_DICE_ROLL_VALUE_PATTERN = Pattern.compile("\\(if:\s*\\$roll(\\d*).*");
     private static final Pattern IF_CONDITION_PATTERN = Pattern.compile("\\(if:(.*?)\\)");
+    private static final Pattern GENERIC_ACTION_PATTERN = Pattern.compile("\\((.*?):(.*)\\)");
+    private static final Pattern GENERIC_ACTION_VALUE_PATTERN = Pattern.compile("(\\w+)\\s*\\{(.*?)\\}");
 
     private File inputDir;
     private File outputDir;
@@ -148,7 +150,7 @@ public class TwineConverter
 
                         for (int i = 0; i < lines.length; i++)
                         {
-                            String line = lines[i];
+                            String line = lines[i].trim();
 
                             if (lineStartsWith(line, "[[") && lineEndsWith(line, "]]"))
                             {
@@ -203,6 +205,15 @@ public class TwineConverter
                                 Log.debug("Found value setter " + setter.getSetString());
 
                                 passage.addValueSetter(setter);
+                            }
+                            else if (line.matches("\\((.*?):.*\\)"))
+                            {
+                                // maybe there are other generic actions, check for them
+                                GenericTwineAction action = extractGenericAction(line);
+
+                                Log.debug("Found generic action of " + action.toString());
+
+                                passage.addGenericAction(action);
                             }
                             else if (lineStartsWith(line, "(if:$default ") || lineStartsWith(line, "(if: $default "))
                             {
@@ -329,6 +340,10 @@ public class TwineConverter
         else if (lineStartsWith(actionText, "(set:"))
         {
             return extractValueSetter(actionText);
+        }
+        else if (line.matches("\\((.*?):.*\\)"))
+        {
+            return extractGenericAction(actionText);
         }
 
         throw new TwineFormatException("Invalid if condition. Missing or invalid action. " + line);
@@ -463,6 +478,39 @@ public class TwineConverter
         line = line.trim();
         String setter = line.substring(6, line.length() - 1).trim();
         var obj = new TwineSetValue(setter);
+        obj.setOrder(this.orderIndex++);
+        return obj;
+    }
+
+    private GenericTwineAction extractGenericAction(String line)
+    {
+        line = line.trim();
+
+        GenericTwineAction obj = null;
+
+        Matcher lineMatcher = GENERIC_ACTION_PATTERN.matcher(line);
+
+        while (lineMatcher.find())
+        {
+            obj = new GenericTwineAction(lineMatcher.group(1));
+
+            Matcher valueMatcher = GENERIC_ACTION_VALUE_PATTERN.matcher(line);
+
+            boolean foundAny = false;
+
+            while (valueMatcher.find())
+            {
+                obj.addValue(valueMatcher.group(1).trim(), valueMatcher.group(2).trim());
+                foundAny = true;
+            }
+
+            if (!foundAny)
+            {
+                // didnt find any formatted values, so we just add the entire content part as a value
+                obj.addValue("value", lineMatcher.group(2).trim());
+            }
+        }
+
         obj.setOrder(this.orderIndex++);
         return obj;
     }

@@ -23,6 +23,7 @@ public class TwinePassage implements Xmlable, Jsonable
     private Set<TwineDialogOption> dialogOptions;
     private Set<TwineCondition> conditions;
     private List<TwineAction> defaultConditions;
+    private List<GenericTwineAction> genericActions;
     private List<TwineSetValue> valueSetters;
     private TwineSwitchPassage passageSwitch;
 
@@ -34,6 +35,7 @@ public class TwinePassage implements Xmlable, Jsonable
         this.conditions = new HashSet<>();
         this.defaultConditions = new LinkedList<>();
         this.valueSetters = new LinkedList<>();
+        this.genericActions = new LinkedList<>();
     }
 
     public int getId()
@@ -124,6 +126,21 @@ public class TwinePassage implements Xmlable, Jsonable
     public void addValueSetter(TwineSetValue valueSetter)
     {
         this.valueSetters.add(valueSetter);
+    }
+
+    public List<GenericTwineAction> getGenericActions()
+    {
+        return this.genericActions;
+    }
+
+    public void setGenericActions(List<GenericTwineAction> actions)
+    {
+        this.genericActions = actions;
+    }
+
+    public void addGenericAction(GenericTwineAction action)
+    {
+        this.genericActions.add(action);
     }
 
     public TwineSwitchPassage getPassageSwitch()
@@ -234,6 +251,7 @@ public class TwinePassage implements Xmlable, Jsonable
         builder.put("conditional", condBuilder.toJSON());
 
         builder.put("valueSetters", this.valueSetters.toArray());
+        builder.put("genericActions", this.genericActions.toArray());
 
         if (this.passageSwitch != null)
         {
