@@ -550,7 +550,7 @@ public class TwineConverter
     private String formatString(String name)
     {
         String newName = name.replace(" ", "_");
-        newName = newName.replaceAll("[^a-zA-Z_0-9]", "");
+        newName = newName.replaceAll("[^a-zA-Z_0-9\\.\\$]", "");
 
         return newName.toLowerCase();
     }
