@@ -164,7 +164,7 @@ public class TwineConverter
 
                                 passage.setPassageSwitch(switchPassage);
                             }
-                            if (lineStartsWith(line, "<<") && lineEndsWith(line, ">>"))
+                            else if (lineStartsWith(line, "<<") && lineEndsWith(line, ">>"))
                             {
                                 TwineSwitchPassage switchPassage = extractSwitchPassage(line, true);
                                 Log.debug("Found unconditional advanced passage switch to " + switchPassage.getPassage());
