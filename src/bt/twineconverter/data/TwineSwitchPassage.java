@@ -16,10 +16,12 @@ import org.json.JSONObject;
 public class TwineSwitchPassage extends TwineAction implements Xmlable, Jsonable
 {
     private String passage;
+    private boolean advanced;
 
-    public TwineSwitchPassage(String passage)
+    public TwineSwitchPassage(String passage, boolean advanced)
     {
         this.passage = passage;
+        this.advanced = advanced;
     }
 
     public String getPassage()
@@ -53,7 +55,15 @@ public class TwineSwitchPassage extends TwineAction implements Xmlable, Jsonable
     {
         JSONBuilder builder = new JSONBuilder();
 
-        builder.put("type", "switch");
+        if (this.advanced)
+        {
+            builder.put("type", "advanced_switch");
+        }
+        else
+        {
+            builder.put("type", "switch");
+        }
+
         builder.put("next", this.passage);
         builder.put("order", this.order);
 

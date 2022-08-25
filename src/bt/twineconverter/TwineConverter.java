@@ -154,8 +154,20 @@ public class TwineConverter
 
                             if (lineStartsWith(line, "[[") && lineEndsWith(line, "]]"))
                             {
-                                TwineSwitchPassage switchPassage = extractSwitchPassage(line);
+                                TwineSwitchPassage switchPassage = extractSwitchPassage(line, false);
                                 Log.debug("Found unconditional passage switch to " + switchPassage.getPassage());
+
+                                if (passage.getPassageSwitch() != null)
+                                {
+                                    Log.warn("Multiple unconditional passage switches detected. Previous value will be overwritten.");
+                                }
+
+                                passage.setPassageSwitch(switchPassage);
+                            }
+                            if (lineStartsWith(line, "<<") && lineEndsWith(line, ">>"))
+                            {
+                                TwineSwitchPassage switchPassage = extractSwitchPassage(line, true);
+                                Log.debug("Found unconditional advanced passage switch to " + switchPassage.getPassage());
 
                                 if (passage.getPassageSwitch() != null)
                                 {
@@ -206,16 +218,7 @@ public class TwineConverter
 
                                 passage.addValueSetter(setter);
                             }
-                            else if (line.matches("\\((.*?):.*\\)"))
-                            {
-                                // maybe there are other generic actions, check for them
-                                GenericTwineAction action = extractGenericAction(line);
-
-                                Log.debug("Found generic action of " + action.toString());
-
-                                passage.addGenericAction(action);
-                            }
-                            else if (lineStartsWith(line, "(if:$default ") || lineStartsWith(line, "(if: $default "))
+                            else if (lineStartsWith(line, "(if:$default ") || lineStartsWith(line, "(if: $default ") || lineStartsWith(line, "(if: $default)"))
                             {
                                 Log.debug("Found default condition");
                                 TwineAction action = extractDefaultCondition(line);
@@ -244,6 +247,15 @@ public class TwineConverter
                                 condition.addAction(action);
 
                                 passage.addCondition(condition);
+                            }
+                            else if (line.matches("\\((.*?):.*\\)"))
+                            {
+                                // maybe there are other generic actions, check for them
+                                GenericTwineAction action = extractGenericAction(line);
+
+                                Log.debug("Found generic action of " + action.toString());
+
+                                passage.addGenericAction(action);
                             }
                             else
                             {
@@ -335,7 +347,11 @@ public class TwineConverter
 
         if (lineStartsWith(actionText, "[[") && lineEndsWith(actionText, "]]"))
         {
-            return extractSwitchPassage(actionText);
+            return extractSwitchPassage(actionText, false);
+        }
+        else if (lineStartsWith(actionText, "<<") && lineEndsWith(actionText, ">>"))
+        {
+            return extractSwitchPassage(actionText, true);
         }
         else if (lineStartsWith(actionText, "(set:"))
         {
@@ -376,7 +392,11 @@ public class TwineConverter
 
         if (lineStartsWith(actionText, "[[") && lineEndsWith(actionText, "]]"))
         {
-            return extractSwitchPassage(actionText);
+            return extractSwitchPassage(actionText, false);
+        }
+        else if (lineStartsWith(actionText, "<<") && lineEndsWith(actionText, ">>"))
+        {
+            return extractSwitchPassage(actionText, true);
         }
         else if (lineStartsWith(actionText, "(set:"))
         {
@@ -463,7 +483,11 @@ public class TwineConverter
 
         if (lineStartsWith(actionText, "[[") && lineEndsWith(actionText, "]]"))
         {
-            return extractSwitchPassage(actionText);
+            return extractSwitchPassage(actionText, false);
+        }
+        else if (lineStartsWith(actionText, "<<") && lineEndsWith(actionText, ">>"))
+        {
+            return extractSwitchPassage(actionText, true);
         }
         else if (lineStartsWith(actionText, "(set:"))
         {
@@ -515,10 +539,10 @@ public class TwineConverter
         return obj;
     }
 
-    private TwineSwitchPassage extractSwitchPassage(String line)
+    private TwineSwitchPassage extractSwitchPassage(String line, boolean advanced)
     {
         String passage = formatString(line.trim()).trim();
-        var obj = new TwineSwitchPassage(passage);
+        var obj = new TwineSwitchPassage(passage, advanced);
         obj.setOrder(this.orderIndex++);
         return obj;
     }
